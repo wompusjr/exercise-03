@@ -1,0 +1,46 @@
+---
+title: "EDA-challenge"
+format: html
+editor: visual
+---
+
+## EDA Challenge for Exercise 3
+
+## Loading the Data
+
+Prior to manipulating the data I loaded it into an R script with the following code. I chose file.choose() over a direct link out of habit. Doing this
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+f <- file.choose()
+d <- read_csv(f, col_names = TRUE)
+```
+
+Doing this created a ***tibble*** with [213 observations]{.underline} and [23 variables]{.underline}
+
+## Challenge 1-3: Creating Variables
+
+First step was to a create the [BSD]{.underline} (ratio of average male body mass to average female body mass), [sex_ratio]{.underline} (ratio of all male members to all female members in a species), and [DI]{.underline} (ratio of day range length to the diameter of the home range) variables in **d**. I did that by dividing the relevant columns for each new variable and loading the result as a new column in the tibble.
+
+For [DI]{.underline}, I had to calculate the diameter from the area in kilometers squared. I first created a vector for each of the variables radii which was the square root of *HomeRange_km2* divided by pi. Then I created a new variable that was the **r** vector multiplied by 2, which multiplied two across each number.
+
+(I also attached the tibble to make it easier to do this)
+
+```{r}
+attach(d)
+d$BSD <- (Body_mass_male_mean/Body_mass_female_mean)
+d$sex_ratio <- (AdultMales/AdultFemale)
+r <- sqrt(HomeRange_km2)/pi
+d$diameter <- r*2
+d$DI <- (DayLength_km/(diameter))
+```
+
+## Challenge 2: Plotting Day-Range Length and Time Spent Moving
+
+Second step was to plot *DayLength_km*
+
+```{r}
+attach(d)
+d$BSD <- (Body_mass_male_mean/Body_mass_female_mean)
+```
