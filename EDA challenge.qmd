@@ -11,6 +11,7 @@ editor: visual
 Prior to manipulating the data I loaded it into an R script with the following code. I chose file.choose() over a direct link out of habit. Doing this
 
 ```{r}
+#| eval: false
 library(tidyverse)
 library(ggplot2)
 f <- file.choose()
@@ -28,6 +29,7 @@ For [DI]{.underline}, I had to calculate the diameter from the area in kilometer
 (I also attached the tibble to make it easier to do this)
 
 ```{r}
+#| eval: false
 attach(d)
 d$BSD <- (Body_mass_male_mean/Body_mass_female_mean)
 d$sex_ratio <- (AdultMales/AdultFemale)
@@ -45,6 +47,7 @@ Second step was to plot some of these to answer some basic questions about the d
 On average, across all primates, there appears to be slight correlation between time spent moving and total range covered in day (**Figure 4.1**).However, when we look at each family individually, only *Atelidae* and *Cercopithecidae* really show any slight correlation between more time spent moving and more distance covered (**Figure 4.2**)
 
 ```{r}
+#| eval: false
 ##day length by time spent moving
 p <- ggplot(data = d, aes(x = log(Move), y = log(DayLength_km), #log is applied to normalize the data
                           color = factor(Family)))
@@ -63,6 +66,7 @@ p #checking faceted graphs
 On average, across all primates, there appears to be strong correlation between time spent moving and the average group size in a species (**Figure 5.1**). Looking across Family, most families follow the same correlation; however, *Lemuridae* exhibits only slight correlation and *Hylobatidae* seems to have no correlation at all (**Figure 5.2**).
 
 ```{r}
+#| eval: false
 ##day length by avg. group size
 p2 <- ggplot(data = d, aes(x = log(MeanGroupSize), y = log(DayLength_km), #log is applied to normalize the data
                           color = factor(Family)))
@@ -81,6 +85,7 @@ p2 #checking faceted graphs
 On average, across all primates, there appears to be strong correlation between canine size dimorphism and the overall body size dimorphism in a species (**Figure 6.1**). Looking at each family individually reveals that only *Cercopithecidae, Cebidae, Galagidae,* and *Hylobatidae* really show a positive correlation. Some families, like *Atelidae,* even had a negative correlation (**Figure 6.2**).
 
 ```{r}
+#| eval: false
 ##canine dimorphism by body dimorphism 
 p3 <- ggplot(data = d, aes(x = log(BSD), y = log(Canine_Dimorphism),#log for convenience
                            color = factor(Family)))
@@ -102,6 +107,7 @@ After using the mutate() and ifelse() functions to create the new variable and l
 Plotting the results (**Figure 7**) reveals that on average frugivores tend to live in similar sized groups as folivores and omnivores; although ominivores interquartile range encompasses large group sizes. Frugivore species do have a much larger range than either other strategy.
 
 ```{r}
+#| eval: false
 d <- mutate(d, diet_strategy = ifelse(Fruit >= 50, "frugivore", ifelse(Leaves >= 50, "folivore",
                                                                    ifelse(Fruit < 50 & Leaves < 50, "omnivore", NA))))
 dnoNA <- d |> drop_na(diet_strategy)
@@ -115,22 +121,19 @@ p4
 
 ## Challenge 8: Piping
 
-The final step was to create a new variable *diet_strategy* and to plot it.
+The final step was to create a pipe of some basic dplyr verbs and then finish with the print() function.
 
-After using the mutate() and ifelse() functions to create the new variable and loading it into the previous **d** tibble. I then had to create a secondary tibble with the NA rows in *diet_strategy* omitted so they wouldn't be accounted for in my boxplot. This second structure was called **dnoNA.**
-
-Plotting the results (**Figure 7**) reveals that on average frugivores tend to live in similar sized groups as folivores and omnivores; although ominivores interquartile range encompasses large group sizes. Frugivore species do have a much larger range than either other strategy.
+I used mutate() to add a new column called Binomial to the data frame, then group_by() to group the data together, summarize() to return means for *Brain_Size_Species_Mean* and *Body_mass_male_mean*, and then finally arrange() to order the table by the mean of brain size from the summarize() results.
 
 ```{r}
-d <- mutate(d, diet_strategy = ifelse(Fruit >= 50, "frugivore", ifelse(Leaves >= 50, "folivore",
-                                                                   ifelse(Fruit < 50 & Leaves < 50, "omnivore", NA))))
-dnoNA <- d |> drop_na(diet_strategy)
-#plotting
-p4 <- ggplot(data = dnoNA, aes(x = diet_strategy, y = log(MeanGroupSize))) #loging for convenience
-p4 <- p4 + geom_boxplot(na.rm = TRUE)
-p4 <- p4 + theme(axis.text.x = element_text(angle = 90))
-p4 <- p4 + ylab("avg. group size")
-p4
+#| eval: false
+mutate(d, Binomial = paste(Genus, Species, sep = " ")) %>%
+  select(Binomial, Family, Brain_Size_Species_Mean, Body_mass_male_mean) %>%
+  group_by(Family) %>%
+  summarize(avgbrain = mean(Brain_Size_Species_Mean, na.rm = TRUE), avgbody = mean(Body_mass_male_mean,
+                                                                          na.rm = TRUE)) %>%
+  arrange(avgbrain)%>%
+  print()
 ```
 
 ## Figures

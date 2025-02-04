@@ -45,4 +45,11 @@ p4 <- p4 + geom_boxplot(na.rm = TRUE)
 p4 <- p4 + theme(axis.text.x = element_text(angle = 90))
 p4 <- p4 + ylab("avg. group size")
 p4
-
+##piping code
+mutate(d, Binomial = paste(Genus, Species, sep = " ")) %>%
+  select(Binomial, Family, Brain_Size_Species_Mean, Body_mass_male_mean) %>%
+  group_by(Family) %>%
+  summarize(avgbrain = mean(Brain_Size_Species_Mean, na.rm = TRUE), avgbody = mean(Body_mass_male_mean,
+                                                                          na.rm = TRUE)) %>%
+  arrange(avgbrain)%>%
+  print()
