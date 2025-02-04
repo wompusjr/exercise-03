@@ -8,14 +8,13 @@ editor: visual
 
 ## Loading the Data
 
-Prior to manipulating the data I loaded it into an R script with the following code. I chose file.choose() over a direct link out of habit. Doing this
+Prior to manipulating the data I loaded it into an R script with the following code.
 
 ```{r}
 #| eval: false
 library(tidyverse)
 library(ggplot2)
-f <- file.choose()
-d <- read_csv(f, col_names = TRUE)
+d <- read_csv("/Users/juneburke/Documents/R_Data/data-wrangling.csv", col_names = TRUE)
 ```
 
 Doing this created a ***tibble*** with [213 observations]{.underline} and [23 variables]{.underline}
