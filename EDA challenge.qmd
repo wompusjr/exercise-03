@@ -36,11 +36,113 @@ d$diameter <- r*2
 d$DI <- (DayLength_km/(diameter))
 ```
 
-## Challenge 2: Plotting Day-Range Length and Time Spent Moving
+## Challenge 4-6: Plotting
 
-Second step was to plot *DayLength_km*
+Second step was to plot some of these to answer some basic questions about the data. For these plots, I used ggplot for it's aesthetic value and customization.
+
+### Challenge 4
+
+On average, across all primates, there appears to be slight correlation between time spent moving and total range covered in day (**Figure 4.1**).However, when we look at each family individually, only *Atelidae* and *Cercopithecidae* really show any slight correlation between more time spent moving and more distance covered (**Figure 4.2**)
 
 ```{r}
-attach(d)
-d$BSD <- (Body_mass_male_mean/Body_mass_female_mean)
+##day length by time spent moving
+p <- ggplot(data = d, aes(x = log(Move), y = log(DayLength_km), #log is applied to normalize the data
+                          color = factor(Family)))
+p <- p + xlab("log(Move)") + ylab("log(DayLength_km)")
+p <- p + geom_point(na.rm = TRUE)
+p <- p + theme(legend.position = "bottom", legend.title = element_blank())
+p #checking first graph of them all together
+p <- p + facet_wrap(~Family, ncol = 4)
+p <- p + theme(legend.position = "none")
+p #checking faceted graphs
+
 ```
+
+### Challenge 5
+
+On average, across all primates, there appears to be strong correlation between time spent moving and the average group size in a species (**Figure 5.1**). Looking across Family, most families follow the same correlation; however, *Lemuridae* exhibits only slight correlation and *Hylobatidae* seems to have no correlation at all (**Figure 5.2**).
+
+```{r}
+##day length by avg. group size
+p2 <- ggplot(data = d, aes(x = log(MeanGroupSize), y = log(DayLength_km), #log is applied to normalize the data
+                          color = factor(Family)))
+p2 <- p2 + xlab("log(Avg. Group Size)") + ylab("log(Day Range Length)")
+p2 <- p2 + geom_point(na.rm = TRUE)
+p2 <- p2 + theme(legend.position = "bottom", legend.title = element_blank())
+p2 #checking first graph of them all together
+p2 <- p2 + facet_wrap(~Family, ncol = 4)
+p2 <- p2 + theme(legend.position = "none")
+p2 #checking faceted graphs
+
+```
+
+### Challenge 6
+
+On average, across all primates, there appears to be strong correlation between canine size dimorphism and the overall body size dimorphism in a species (**Figure 6.1**). Looking at each family individually reveals that only *Cercopithecidae, Cebidae, Galagidae,* and *Hylobatidae* really show a positive correlation. Some families, like *Atelidae,* even had a negative correlation (**Figure 6.2**).
+
+```{r}
+##canine dimorphism by body dimorphism 
+p3 <- ggplot(data = d, aes(x = log(BSD), y = log(Canine_Dimorphism),#log for convenience
+                           color = factor(Family)))
+p3 <- p3 + xlab("log of Body Sex Dimorphism") + ylab("log or Canine Dimorphism") 
+p3 <- p3 + geom_point(na.rm = TRUE)
+p3 <- p3 + theme(legend.position = "bottom", legend.title = element_blank())
+p3 #checking total plot
+p3 <- p3 + facet_wrap(~Family, ncol = 4)
+p3 <- p3 + theme(legend.position = "none")
+p3 #checking facetted plot
+```
+
+## Challenge 7: Diet Strategy
+
+The third step was to create a new variable *diet_strategy* and to plot it.
+
+After using the mutate() and ifelse() functions to create the new variable and loading it into the previous **d** tibble. I then had to create a secondary tibble with the NA rows in *diet_strategy* omitted so they wouldn't be accounted for in my boxplot. This second structure was called **dnoNA.**
+
+Plotting the results (**Figure 7**) reveals that on average frugivores tend to live in similar sized groups as folivores and omnivores; although ominivores interquartile range encompasses large group sizes. Frugivore species do have a much larger range than either other strategy.
+
+```{r}
+d <- mutate(d, diet_strategy = ifelse(Fruit >= 50, "frugivore", ifelse(Leaves >= 50, "folivore",
+                                                                   ifelse(Fruit < 50 & Leaves < 50, "omnivore", NA))))
+dnoNA <- d |> drop_na(diet_strategy)
+#plotting
+p4 <- ggplot(data = dnoNA, aes(x = diet_strategy, y = log(MeanGroupSize))) #loging for convenience
+p4 <- p4 + geom_boxplot(na.rm = TRUE)
+p4 <- p4 + theme(axis.text.x = element_text(angle = 90))
+p4 <- p4 + ylab("avg. group size")
+p4
+```
+
+## Challenge 8: Piping
+
+The final step was to create a new variable *diet_strategy* and to plot it.
+
+After using the mutate() and ifelse() functions to create the new variable and loading it into the previous **d** tibble. I then had to create a secondary tibble with the NA rows in *diet_strategy* omitted so they wouldn't be accounted for in my boxplot. This second structure was called **dnoNA.**
+
+Plotting the results (**Figure 7**) reveals that on average frugivores tend to live in similar sized groups as folivores and omnivores; although ominivores interquartile range encompasses large group sizes. Frugivore species do have a much larger range than either other strategy.
+
+```{r}
+d <- mutate(d, diet_strategy = ifelse(Fruit >= 50, "frugivore", ifelse(Leaves >= 50, "folivore",
+                                                                   ifelse(Fruit < 50 & Leaves < 50, "omnivore", NA))))
+dnoNA <- d |> drop_na(diet_strategy)
+#plotting
+p4 <- ggplot(data = dnoNA, aes(x = diet_strategy, y = log(MeanGroupSize))) #loging for convenience
+p4 <- p4 + geom_boxplot(na.rm = TRUE)
+p4 <- p4 + theme(axis.text.x = element_text(angle = 90))
+p4 <- p4 + ylab("avg. group size")
+p4
+```
+
+## Figures
+
+![(4.1)](challenge4.1.png){fig-align="left" width="503"}
+
+![(4.2)](challenge%204.2.png)
+
+![(5.1)](challenge 5.1.png)
+
+![(5.2)](challenge 5.2.png)
+
+![(6.1)](challenge6.1.png)
+
+![(7)](challenge 7.png)
