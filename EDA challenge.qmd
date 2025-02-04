@@ -142,10 +142,10 @@ mutate(d, Binomial = paste(Genus, Species, sep = " ")) %>%
 
 ![(4.2)](challenge%204.2.png)
 
-![(5.1)](challenge 5.1.png)
+![(5.1)](challenge%205.1.png)
 
-![(5.2)](challenge 5.2.png)
+![(5.2)](challenge%205.2.png)
 
 ![(6.1)](challenge6.1.png)
 
-![(7)](challenge 7.png)
+![(7)](challenge%207.png)
